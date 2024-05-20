@@ -87,6 +87,7 @@ class Controller extends BaseController
                 }
             }
             if (!$message) {
+                print($message);
                 $message = $this->getMessage('MESSAGE_NOTFOUND');
             }
             return $message;

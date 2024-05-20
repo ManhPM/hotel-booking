@@ -39,6 +39,8 @@ Route::middleware(['language', 'auth:api'])->group(function () {
         // Route::delete('rooms/{id}', [RoomController::class, 'destroy'])->middleware('permission:delete-room', 'check.room.exist');
 
         Route::post('rooms', [RoomController::class, 'store']);
+        Route::get('rooms/offline', [RoomController::class, 'getAvailableRoomsOffline']);
+        Route::get('rooms/online', [RoomController::class, 'getAvailableRoomsOnline']);
         Route::put('rooms/{id}', [RoomController::class, 'update'])->middleware('check.room.exist');
         Route::delete('rooms/{id}', [RoomController::class, 'destroy'])->middleware('check.room.exist');
 
@@ -55,34 +57,21 @@ Route::middleware(['language', 'auth:api'])->group(function () {
         Route::get('bookings/confirm/{id}', [BookingController::class, 'confirmBooking'])->middleware('permission:confirm-order', 'check.booking.exist');
         Route::get('bookings/cancel/{id}', [BookingController::class, 'cancelBooking'])->middleware('permission:cancel-order', 'check.booking.exist');
         Route::get('bookings', [BookingController::class, 'index'])->middleware('permission:show-order');
+
+        Route::post('bookings/create/offline', [BookingController::class, 'createOfflineBooking']);
+        Route::post('bookings/create/online', [BookingController::class, 'createOnlineBooking']);
+        Route::get('bookings/checkin/{id}', [BookingController::class, 'checkIn']);
+        Route::get('bookings/checkout/{id}', [BookingController::class, 'checkOut']);
+
         Route::get('bookings/user', [BookingController::class, 'getAllBookingUser']);
         Route::get('bookings/detail/{id}', [BookingController::class, 'getDetailBooking'])->middleware('permission:show-order-detail', 'check.booking.exist');
 
-        // Route::post('vnpay/create_payment_url', [VnpayController::class, 'createPaymentUrl']);
+        Route::post('vnpay/create_payment_url', [VnpayController::class, 'createPaymentUrl']);
 
         Route::get('logout', [AuthController::class, 'logout']);
         Route::get('profile', [AuthController::class, 'profile']);
         Route::put('profile', [AuthController::class, 'update']);
     });
-});
-
-Route::prefix('v1')->group(function () {
-    // Route::get('coupons', [CouponController::class, 'index']);
-    // Route::get('rooms', [RoomController::class, 'index']);
-    // Route::get('payment_methods', [PaymentMethodController::class, 'index']);
-    // Route::get('rooms/{id}', [RoomController::class, 'show'])->middleware('check.room.exist');
-    // Route::post('login', [AuthController::class, 'login']);
-    // Route::post('register', [AuthController::class, 'register']);
-    // Route::get('refresh_token', [AuthController::class, 'refreshToken']);
-
-    // Route::post('upload', [UploadController::class, 'upload']);
-    // Route::get('change_language', [Controller::class, 'changeLanguage']);
-    // Route::get('test', [Controller::class, 'test']);
-
-    // Route::get('vnpay/vnpay_return', [VnpayController::class, 'vnpayReturn']);
-
-    // Route::post('forgot_password', [AuthController::class, 'forgotPassword']);
-    // Route::post('reset_password', [AuthController::class, 'resetPassword']);
 });
 
 Route::middleware('language')->group(function () {

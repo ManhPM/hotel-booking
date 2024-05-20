@@ -9,6 +9,7 @@ use App\Http\Resources\ResponseResource;
 use App\Models\Category;
 use App\Models\Room;
 use App\Models\RoomHasImage;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class RoomController extends Controller
@@ -33,6 +34,43 @@ class RoomController extends Controller
     {
         try {
             return new ResponseResource(Room::latest('id')->with('images')->paginate(5));
+        } catch (\Throwable $th) {
+            $message = $this->getMessage('INTERNAL_SERVER_ERROR');
+            return response()->json(['message' => $message . $th], 500);
+        }
+    }
+
+
+    public function getAvailableRoomsOnline(Request $request)
+    {
+        try {
+            $startDate = $request->startDate;
+            $endDate = $request->endDate;
+
+            $availableRooms = Room::whereDoesntHave('bookings', function ($query) use ($startDate, $endDate) {
+                $query->where('status', 'confirmed')->orWhereBetween('check_in_date', [$startDate, $endDate])
+                    ->orWhereBetween('check_out_date', [$startDate, $endDate]);
+            })->where('status', 'empty')->paginate(5);
+
+            return new ResponseResource($availableRooms);
+        } catch (\Throwable $th) {
+            $message = $this->getMessage('INTERNAL_SERVER_ERROR');
+            return response()->json(['message' => $message . $th], 500);
+        }
+    }
+
+    public function getAvailableRoomsOffline(Request $request)
+    {
+        try {
+            $startDate = $request->startDate;
+            $endDate = $request->endDate;
+
+            $availableRooms = Room::whereDoesntHave('bookings', function ($query) use ($startDate, $endDate) {
+                $query->where('status', 'confirmed')->orWhereBetween('check_in_date', [$startDate, $endDate])
+                    ->orWhereBetween('check_out_date', [$startDate, $endDate]);
+            })->paginate(5);
+
+            return new ResponseResource($availableRooms);
         } catch (\Throwable $th) {
             $message = $this->getMessage('INTERNAL_SERVER_ERROR');
             return response()->json(['message' => $message . $th], 500);
@@ -67,6 +105,7 @@ class RoomController extends Controller
             return response()->json(['message' => $message . $th], 500);
         }
     }
+
 
     /**
      * Display the specified resource.

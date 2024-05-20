@@ -22,6 +22,7 @@ return new class extends Migration
             $table->date('check_out_date');
             $table->double('total');
             $table->string('status')->default('pending');
+            $table->string('type');
             $table->string('payment_status');
             $table->string('note')->nullable();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();

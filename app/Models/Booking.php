@@ -17,7 +17,9 @@ class Booking extends Model
         'check_out_date',
         'note',
         'total',
-        'payment_status'
+        'payment_status',
+        'status',
+        'type'
     ];
 
     public function user()

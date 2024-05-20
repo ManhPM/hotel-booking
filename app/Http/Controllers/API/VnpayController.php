@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Http\Controllers\Controller;
+use App\Models\Payment;
 
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 date_default_timezone_set('Asia/Ho_Chi_Minh');
@@ -22,7 +23,7 @@ class VnpayController extends Controller
                 return response()->json(['message' => $message], 404);
             }
 
-            if ($booking->payment_status == 'paid' || $booking->payment_method_id == 2) {
+            if ($booking->payment_status == 'paid') {
                 $message = $this->getMessage('PAYMENT_ERROR3');
                 return response()->json(['message' => $message], 400);
             }
@@ -108,6 +109,13 @@ class VnpayController extends Controller
                 $message = $this->getMessage('INVOICE_NOTFOUND');
                 return response()->json(['message' => $message], 404);
             }
+
+            $dataCreate['amount'] = $booking->total;
+            $dataCreate['type'] = 'all';
+            $dataCreate['payment_date'] = date('Y-m-d');
+            $dataCreate['booking_id'] = $booking->id;
+
+            Payment::create($dataCreate);
 
             $booking->payment_status = 'paid';
             $booking->save();
